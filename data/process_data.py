@@ -5,12 +5,15 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
-    """Load data in .csv files. Store and return the data in pandas DataFrame
+    """Load data in .csv files. 
 
-    Keyword arguments:
-    messages_filepath -- path to the `disaster_categories.csv` file
-    categories_filepath -- path to the `disaster_messages.csv` file
+    Args:
+        messages_filepath (str): path to the `disaster_categories.csv` file
+        categories_filepath (str): path to the `disaster_messages.csv` file
 
+    returns:
+        df (DatFrame): DataFrame containing combined data loaded from two CSV
+        files
     """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
@@ -25,8 +28,11 @@ def clean_data(df):
     """Returns a cleaned and preprocessed data that is ready for
     machine learning pipeline
 
-    keyword arguments:
-    df -- DataFrame containing joined message and categories data
+    Args:
+        df (DataFrame): joined message and categories data
+
+    Returs:
+        df (DataFrame): cleaned and preprocessed data
     """
 
     # create a data frame of 36 individual category columns
@@ -53,6 +59,8 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """Save data as a SQLite .db file"""
+
     engine = create_engine("sqlite:///" + database_filename)
     df.to_sql("messages", engine, index=False, if_exists="replace")
 
