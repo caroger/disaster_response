@@ -1,6 +1,7 @@
 import pickle
 import re
 import sys
+import warnings
 
 import nltk
 import numpy as np
@@ -16,8 +17,8 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
 from sqlalchemy import create_engine
 
-nltk.download("punkt")
-nltk.download("stopwords")
+nltk.download(["punkt", "stopwords"])
+warnings.simplefilter("ignore")
 
 
 def load_data(database_filepath):
@@ -111,7 +112,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     """Print model evaluation scores (f1-micro) for each output category
 
     Args:
-        model: sklearn estimator 
+        model: sklearn estimator
         X_test (DataFrame): input variables for test
         Y_test (DataFrame): output variables for test
         category_names (list[str]): category names for the output variables
