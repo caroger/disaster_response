@@ -1,33 +1,50 @@
 import json
+import re
 
+import nltk
 import pandas as pd
 import plotly
 from flask import Flask, jsonify, render_template, request
+from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import word_tokenize
 from plotly.graph_objs import Bar
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
+nltk.download(["punkt", "stopwords"])
+
 app = Flask(__name__)
 
 
-# def tokenize(text):
-#     tokens = word_tokenize(text)
-#     lemmatizer = WordNetLemmatizer()
+def tokenize(text):
+    """Normalize, tokenize and stem text string
 
-#     clean_tokens = []
-#     for tok in tokens:
-#         clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-#         clean_tokens.append(clean_tok)
+    Args:
+        text (str): String containing message for processing
 
-#     return clean_tokens
+    Returns:
+        stemmed (list[str]). List containing normalized and stemmed word tokens
+    """
+    # Convert text to lowercase and remove punctuation
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
+
+    # Tokenize words
+    tokens = word_tokenize(text)
+
+    # Stem word tokens and remove stop words
+    stemmer = PorterStemmer()
+    stop_words = stopwords.words("english")
+    stemmed = [stemmer.stem(word) for word in tokens if word not in stop_words]
+
+    return stemmed
 
 
 # load data
 engine = create_engine("sqlite:///../data/DisasterResponse.db")
 df = pd.read_sql_table("messages", engine)
-
+df = df.drop("child_alone", axis=1)
 # load model
 model = joblib.load("../models/classifier.pkl")
 
