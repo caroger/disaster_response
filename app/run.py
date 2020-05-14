@@ -6,11 +6,11 @@ import pandas as pd
 import plotly
 from flask import Flask, jsonify, render_template, request
 from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import word_tokenize
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+
+import joblib
 from sqlalchemy import create_engine
 
 nltk.download(["punkt", "stopwords"])
@@ -43,8 +43,8 @@ def tokenize(text):
 
 # load data
 engine = create_engine("sqlite:///../data/DisasterResponse.db")
-df = pd.read_sql_table("messages", engine)
-df = df.drop("child_alone", axis=1)
+df_raw = pd.read_sql_table("messages", engine)
+df_model = df_raw.drop("child_alone", axis=1)
 # load model
 model = joblib.load("../models/classifier.pkl")
 
@@ -55,21 +55,48 @@ model = joblib.load("../models/classifier.pkl")
 def index():
 
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
-    genre_counts = df.groupby("genre").count()["message"]
+    ## Data for figure 1: Distribution of Message Genres
+    genre_counts = df_raw.groupby("genre").count()["message"]
     genre_names = list(genre_counts.index)
 
+    ## Stacked Bar Chart
+    df_fig2 = (
+        df_raw.iloc[:, 4:].apply(lambda x: x.value_counts(normalize=False)).fillna(0).T
+    )
+
+    trace1 = {
+        "x": df_fig2.index.tolist(),
+        "y": df_fig2[0],
+        "name": "val_0",
+        "type": "bar",
+    }
+
+    trace2 = {
+        "x": df_fig2.index.tolist(),
+        "y": df_fig2[1],
+        "name": "val_1",
+        "type": "bar",
+    }
+
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
+        # Fig1
         {
             "data": [Bar(x=genre_names, y=genre_counts)],
             "layout": {
                 "title": "Distribution of Message Genres",
                 "yaxis": {"title": "Count"},
-                "xaxis": {"title": "Genre"},
             },
-        }
+        },
+        # Fig 2
+        {
+            "data": [trace1, trace2],
+            "layout": {
+                "barmode": "stack",
+                "title": "Category Value Counts",
+                "yaxis": {"title": "Count"},
+            },
+        },
     ]
 
     # encode plotly graphs in JSON
@@ -88,7 +115,7 @@ def go():
 
     # use model to predict classification for query
     classification_labels = model.predict([query])[0]
-    classification_results = dict(zip(df.columns[4:], classification_labels))
+    classification_results = dict(zip(df_model.columns[4:], classification_labels))
 
     # This will render the go.html Please see that file.
     return render_template(
