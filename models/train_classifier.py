@@ -90,12 +90,12 @@ def build_model(x_train, y_train):
 
     # Params for grid search cv
     pram_grid = {
-        # "vect__max_df": (0.5, 0.75, 1.0),
-        # "vect__ngram_range": ((1, 1), (1, 2)),
-        # "tfidf__norm": ("l1", "l2"),
-        # "clf__estimator__max_iter": (100, 500, 1000),
-        # "clf__estimator__alpha": (0.00001, 0.000001),
-        # "clf__estimator__penalty": ("l2", "elasticnet"),
+        "vect__max_df": (0.5, 0.75, 1.0),
+        "vect__ngram_range": ((1, 1), (1, 2)),
+        "tfidf__norm": ("l1", "l2"),
+        "clf__estimator__max_iter": (100, 500, 1000),
+        "clf__estimator__alpha": (0.00001, 0.000001),
+        "clf__estimator__penalty": ("l2", "elasticnet"),
         # hinge = linear SVM, log = logistic regression
         "clf__estimator__loss": ("hinge", "log"),
     }
