@@ -93,7 +93,7 @@ def index():
             "data": [trace1, trace2],
             "layout": {
                 "barmode": "stack",
-                "title": "Category Value Counts",
+                "title": "Value Counts of Category Variables",
                 "yaxis": {"title": "Count"},
             },
         },
