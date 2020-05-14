@@ -56,6 +56,8 @@ This application can potentially help first responders and government agencies t
 
 4. Launch the app on your browser <http://0.0.0.0:3001/>
 
+5. Start using the app by entring text to the input field then click the `Classify Message` button to get the classification result.
+
 ## 4. Data Processing and Machine Learning Steps
 
 ### ETL Pipeline
